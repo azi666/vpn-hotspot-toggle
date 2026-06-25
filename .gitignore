@@ -1,0 +1,6 @@
+﻿apk_project/local.properties
+*.apk
+classes/
+framework.jar
+build/
+.gradle/

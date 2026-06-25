@@ -1,0 +1,52 @@
+name: Build APK
+
+on:
+  push:
+    paths:
+      - 'apk_project/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools build-tools;34.0.0 platforms;android-34'
+      
+      - name: Generate Keystore
+        run: |
+          keytool -genkeypair -alias vpnkey -keyalg RSA -keysize 2048 \
+            -validity 10000 -keystore /tmp/vpn.keystore \
+            -storepass 123456 -keypass 123456 \
+            -dname "CN=VPN,O=VPN,C=CN"
+      
+      - name: Build APK
+        working-directory: apk_project
+        run: |
+          gradle assembleRelease --no-daemon -x lint --no-build-cache
+      
+      - name: Sign APK
+        run: |
+          cp apk_project/app/build/outputs/apk/release/app-release-unsigned.apk /tmp/unsigned.apk
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+            --ks /tmp/vpn.keystore \
+            --ks-pass pass:123456 \
+            --key-pass pass:123456 \
+            --out /tmp/vpn_hotspot_toggle.apk /tmp/unsigned.apk
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: vpn-hotspot-toggle
+          path: /tmp/vpn_hotspot_toggle.apk

@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -45,8 +47,11 @@ jobs:
             --key-pass pass:123456 \
             --out /tmp/vpn_hotspot_toggle.apk /tmp/unsigned.apk
       
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Create Release and Upload APK
+        uses: softprops/action-gh-release@v1
         with:
-          name: vpn-hotspot-toggle
-          path: /tmp/vpn_hotspot_toggle.apk
+          tag_name: v1.4
+          name: VPN Hotspot Toggle v1.4
+          files: /tmp/vpn_hotspot_toggle.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

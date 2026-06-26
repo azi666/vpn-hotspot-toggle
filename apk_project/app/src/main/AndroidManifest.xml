@@ -34,6 +34,9 @@
                 <action android:name="com.vpnhotspot.TOGGLE" />
                 <action android:name="com.vpnhotspot.TOGGGLE_START" />
                 <action android:name="com.vpnhotspot.TOGGGLE_STOP" />
+                <action android:name="com.vpnhotspot.STARTED" />
+                <action android:name="com.vpnhotspot.STOPPED" />
+                <action android:name="com.vpnhotspot.FAILED" />
             </intent-filter>
         </receiver>
     </application>

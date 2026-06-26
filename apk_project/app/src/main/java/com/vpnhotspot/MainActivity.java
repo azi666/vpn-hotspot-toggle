@@ -50,19 +50,43 @@ public class MainActivity extends Activity {
     }
 
     private void doAction() {
-        // /data/adb is root-only, app can't read it directly
-        // Always send broadcast to trigger proxy start via root shell
-        try {
+        // Check if notification is showing to determine proxy state
+        boolean isRunning = isNotificationShowing();
+
+        if (isRunning) {
+            // Proxy is running, stop it
+            Toast.makeText(this, "正在关闭热点共享...",
+                Toast.LENGTH_SHORT).show();
+            Intent i = new Intent("com.vpnhotspot.TOGGGLE_STOP");
+            i.setPackage(getPackageName());
+            sendBroadcast(i);
+        } else {
+            // Proxy is not running, start it
+            Toast.makeText(this, "正在开启热点共享...",
+                Toast.LENGTH_SHORT).show();
             Intent i = new Intent("com.vpnhotspot.TOGGGLE_START");
             i.setPackage(getPackageName());
             sendBroadcast(i);
-            Toast.makeText(this, "正在切换VPN热点共享...",
-                Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "操作失败",
-                Toast.LENGTH_LONG).show();
         }
         finish();
+    }
+
+    private boolean isNotificationShowing() {
+        try {
+            NotificationManager nm = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= 23) {
+                for (android.service.notification.StatusBarNotification sbn :
+                        nm.getActiveNotifications()) {
+                    if (sbn.getId() == NOTIFICATION_ID &&
+                            "com.vpnhotspot".equals(sbn.getPackageName())) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        } catch (Exception e) {}
+        return false;
     }
 
     private void showNotification() {

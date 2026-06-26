@@ -8,6 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,7 +36,19 @@ public class ProxyReceiver extends BroadcastReceiver {
         } else if ("com.vpnhotspot.TOGGGLE_STOP".equals(action)) {
             writeFlag(context, "stop");
             cancelNotification(context);
+        } else if ("com.vpnhotspot.STARTED".equals(action)) {
+            showToast(context, "\u5f00\u542f\u6210\u529f");
+        } else if ("com.vpnhotspot.STOPPED".equals(action)) {
+            showToast(context, "\u5173\u95ed\u6210\u529f");
+        } else if ("com.vpnhotspot.FAILED".equals(action)) {
+            String msg = intent.getStringExtra("msg");
+            showToast(context, msg != null ? msg : "\u64cd\u4f5c\u5931\u8d25");
         }
+    }
+
+    private void showToast(Context context, String msg) {
+        new Handler(Looper.getMainLooper()).post(() ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show());
     }
 
     private void writeFlag(Context context, String cmd) {

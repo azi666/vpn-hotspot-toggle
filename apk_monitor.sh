@@ -30,15 +30,31 @@ while true; do
             case "$CMD" in
                 start)
                     sh "$MODDIR/proxy_ctrl.sh" start >/dev/null 2>&1
+                    if [ -f /data/adb/vpn_hotspot_share_active ]; then
+                        am broadcast -a com.vpnhotspot.STARTED -p com.vpnhotspot >/dev/null 2>&1
+                    else
+                        am broadcast -a com.vpnhotspot.FAILED -p com.vpnhotspot --es msg "开启失败" >/dev/null 2>&1
+                    fi
                     ;;
                 stop)
                     sh "$MODDIR/proxy_ctrl.sh" stop >/dev/null 2>&1
+                    if [ ! -f /data/adb/vpn_hotspot_share_active ]; then
+                        am broadcast -a com.vpnhotspot.STOPPED -p com.vpnhotspot >/dev/null 2>&1
+                    else
+                        am broadcast -a com.vpnhotspot.FAILED -p com.vpnhotspot --es msg "关闭失败" >/dev/null 2>&1
+                    fi
                     ;;
                 toggle)
                     if [ -f /data/adb/vpn_hotspot_share_active ]; then
                         sh "$MODDIR/proxy_ctrl.sh" stop >/dev/null 2>&1
+                        if [ ! -f /data/adb/vpn_hotspot_share_active ]; then
+                            am broadcast -a com.vpnhotspot.STOPPED -p com.vpnhotspot >/dev/null 2>&1
+                        fi
                     else
                         sh "$MODDIR/proxy_ctrl.sh" start >/dev/null 2>&1
+                        if [ -f /data/adb/vpn_hotspot_share_active ]; then
+                            am broadcast -a com.vpnhotspot.STARTED -p com.vpnhotspot >/dev/null 2>&1
+                        fi
                     fi
                     ;;
             esac

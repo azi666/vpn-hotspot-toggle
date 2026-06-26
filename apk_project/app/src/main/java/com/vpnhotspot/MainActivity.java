@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
                 Toast.LENGTH_SHORT).show();
         } else {
             try {
-                Runtime.getRuntime().exec(new String[]{"sh", "-c",
+                Runtime.getRuntime().exec(new String[]{"su", "-c",
                     "sh /data/adb/modules/vpn_hotspot_share/proxy_ctrl.sh start"
                 });
                 Toast.makeText(this, "正在启动VPN热点共享...",

@@ -99,8 +99,6 @@ public class MainActivity extends Activity {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(new Notification.BigTextStyle()
                 .bigText("VPN热点共享运行中\n代理地址: 172.25.1.1:7890\n\n点击此通知即可停止共享"))
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel,
-                "停止共享", togglePi)
             .build();
 
         nm.notify(NOTIFICATION_ID, notif);

@@ -76,15 +76,10 @@ public class MainActivity extends Activity {
             nm.createNotificationChannel(channel);
         }
 
-        Intent stopIntent = new Intent(this, StopActivity.class);
-        PendingIntent stopPi = PendingIntent.getActivity(
-            this, 0, stopIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        Intent toggleIntent = new Intent(this, ProxyReceiver.class);
-        toggleIntent.setAction("com.vpnhotspot.TOGGLE");
-        PendingIntent togglePi = PendingIntent.getBroadcast(
-            this, 1, toggleIntent,
+        Intent stopIntent = new Intent(this, ProxyReceiver.class);
+        stopIntent.setAction("com.vpnhotspot.TOGGGLE_STOP");
+        PendingIntent stopPi = PendingIntent.getBroadcast(
+            this, 100, stopIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification.Builder builder;

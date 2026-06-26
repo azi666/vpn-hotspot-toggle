@@ -37,14 +37,19 @@ public class ProxyReceiver extends BroadcastReceiver {
     }
 
     private void writeFlag(Context context, String cmd) {
+        // Try app private dir first (always writable)
         try {
-            File flag = new File("/data/local/tmp/vpn_hotspot_cmd");
+            File flag = new File(context.getFilesDir(), "vpn_hotspot_cmd");
             FileWriter w = new FileWriter(flag);
             w.write(cmd);
             w.close();
+            // Make readable by root
+            try {
+                Runtime.getRuntime().exec(new String[]{"chmod", "644", flag.getAbsolutePath()}).waitFor();
+            } catch (Exception e) {}
         } catch (Exception e) {
             try {
-                File flag = new File(context.getFilesDir(), "vpn_hotspot_cmd");
+                File flag = new File("/data/local/tmp/vpn_hotspot_cmd");
                 FileWriter w = new FileWriter(flag);
                 w.write(cmd);
                 w.close();
@@ -63,10 +68,10 @@ public class ProxyReceiver extends BroadcastReceiver {
             nm.createNotificationChannel(channel);
         }
 
-        Intent stopIntent = new Intent(context, StopActivity.class);
-        stopIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent stopPi = PendingIntent.getActivity(
-            context, 0, stopIntent,
+        Intent stopIntent = new Intent(context, ProxyReceiver.class);
+        stopIntent.setAction("com.vpnhotspot.TOGGGLE_STOP");
+        PendingIntent stopPi = PendingIntent.getBroadcast(
+            context, 100, stopIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification.Builder builder;

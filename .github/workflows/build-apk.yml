@@ -36,7 +36,8 @@ jobs:
       - name: Build APK
         working-directory: apk_project
         run: |
-          gradle assembleRelease --no-daemon -x lint --no-build-cache
+          gradle wrapper --gradle-version 8.2
+          ./gradlew assembleRelease --no-daemon -x lint --no-build-cache
       
       - name: Sign APK
         run: |

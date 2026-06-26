@@ -19,6 +19,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".StopActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <receiver
             android:name=".ProxyReceiver"
             android:exported="true">

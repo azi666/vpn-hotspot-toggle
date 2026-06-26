@@ -42,10 +42,16 @@ public class ProxyReceiver extends BroadcastReceiver {
             nm.createNotificationChannel(channel);
         }
 
-        Intent stopIntent = new Intent(context, ProxyReceiver.class);
-        stopIntent.setAction("com.vpnhotspot.TOGGLE");
-        PendingIntent stopPi = PendingIntent.getBroadcast(
+        Intent stopIntent = new Intent(context, StopActivity.class);
+        stopIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent stopPi = PendingIntent.getActivity(
             context, 0, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        Intent toggleIntent = new Intent(context, ProxyReceiver.class);
+        toggleIntent.setAction("com.vpnhotspot.TOGGLE");
+        PendingIntent togglePi = PendingIntent.getBroadcast(
+            context, 1, toggleIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification.Builder builder;
@@ -66,7 +72,7 @@ public class ProxyReceiver extends BroadcastReceiver {
             .setStyle(new Notification.BigTextStyle()
                 .bigText("VPN热点共享运行中\n代理地址: 172.25.1.1:7890\n\n点击此通知即可停止共享"))
             .addAction(android.R.drawable.ic_menu_close_clear_cancel,
-                "停止共享", stopPi)
+                "停止共享", togglePi)
             .build();
 
         nm.notify(NOTIFICATION_ID, notif);

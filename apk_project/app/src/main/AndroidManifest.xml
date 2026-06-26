@@ -32,6 +32,8 @@
                 <action android:name="com.vpnhotspot.SHOW" />
                 <action android:name="com.vpnhotspot.HIDE" />
                 <action android:name="com.vpnhotspot.TOGGLE" />
+                <action android:name="com.vpnhotspot.TOGGGLE_START" />
+                <action android:name="com.vpnhotspot.TOGGGLE_STOP" />
             </intent-filter>
         </receiver>
     </application>

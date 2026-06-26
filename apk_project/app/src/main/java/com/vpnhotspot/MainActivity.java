@@ -50,32 +50,17 @@ public class MainActivity extends Activity {
     }
 
     private void doAction() {
-        boolean isRunning = new java.io.File(
-            "/data/adb/vpn_hotspot_share_active").exists();
-
-        if (isRunning) {
-            showNotification();
-            Toast.makeText(this, "VPN热点共享运行中，通知栏可停止",
+        // /data/adb is root-only, app can't read it directly
+        // Always send broadcast to trigger proxy start via root shell
+        try {
+            Intent i = new Intent("com.vpnhotspot.TOGGGLE_START");
+            i.setPackage(getPackageName());
+            sendBroadcast(i);
+            Toast.makeText(this, "正在切换VPN热点共享...",
                 Toast.LENGTH_SHORT).show();
-        } else {
-            try {
-                Runtime.getRuntime().exec(new String[]{"su", "-c",
-                    "sh /data/adb/modules/vpn_hotspot_share/proxy_ctrl.sh start"
-                });
-                Toast.makeText(this, "正在启动VPN热点共享...",
-                    Toast.LENGTH_SHORT).show();
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(2000);
-                        Intent i = new Intent("com.vpnhotspot.SHOW");
-                        i.setPackage(getPackageName());
-                        sendBroadcast(i);
-                    } catch (Exception e) {}
-                }).start();
-            } catch (Exception e) {
-                Toast.makeText(this, "启动失败",
-                    Toast.LENGTH_LONG).show();
-            }
+        } catch (Exception e) {
+            Toast.makeText(this, "操作失败",
+                Toast.LENGTH_LONG).show();
         }
         finish();
     }

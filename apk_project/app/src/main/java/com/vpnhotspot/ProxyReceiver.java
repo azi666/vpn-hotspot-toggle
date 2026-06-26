@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import java.io.File;
+import java.io.FileWriter;
+
 public class ProxyReceiver extends BroadcastReceiver {
     private static final String CHANNEL_ID = "vpn_hotspot_channel";
     private static final int NOTIFICATION_ID = 1001;
@@ -23,11 +26,29 @@ public class ProxyReceiver extends BroadcastReceiver {
         } else if ("com.vpnhotspot.HIDE".equals(action)) {
             cancelNotification(context);
         } else if ("com.vpnhotspot.TOGGLE".equals(action)) {
+            writeFlag(context, "toggle");
+        } else if ("com.vpnhotspot.TOGGGLE_START".equals(action)) {
+            writeFlag(context, "start");
+            showNotification(context);
+        } else if ("com.vpnhotspot.TOGGGLE_STOP".equals(action)) {
+            writeFlag(context, "stop");
             cancelNotification(context);
+        }
+    }
+
+    private void writeFlag(Context context, String cmd) {
+        try {
+            File flag = new File("/data/local/tmp/vpn_hotspot_cmd");
+            FileWriter w = new FileWriter(flag);
+            w.write(cmd);
+            w.close();
+        } catch (Exception e) {
             try {
-                Runtime.getRuntime().exec(new String[]{"sh", "-c",
-                    "sh /data/adb/modules/vpn_hotspot_share/action.sh"});
-            } catch (Exception e) {}
+                File flag = new File(context.getFilesDir(), "vpn_hotspot_cmd");
+                FileWriter w = new FileWriter(flag);
+                w.write(cmd);
+                w.close();
+            } catch (Exception e2) {}
         }
     }
 
@@ -48,12 +69,6 @@ public class ProxyReceiver extends BroadcastReceiver {
             context, 0, stopIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent toggleIntent = new Intent(context, ProxyReceiver.class);
-        toggleIntent.setAction("com.vpnhotspot.TOGGLE");
-        PendingIntent togglePi = PendingIntent.getBroadcast(
-            context, 1, toggleIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(context, CHANNEL_ID);
@@ -71,8 +86,6 @@ public class ProxyReceiver extends BroadcastReceiver {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(new Notification.BigTextStyle()
                 .bigText("VPN热点共享运行中\n代理地址: 172.25.1.1:7890\n\n点击此通知即可停止共享"))
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel,
-                "停止共享", togglePi)
             .build();
 
         nm.notify(NOTIFICATION_ID, notif);

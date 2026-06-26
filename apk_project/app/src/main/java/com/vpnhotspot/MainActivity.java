@@ -106,13 +106,14 @@ public class MainActivity extends Activity {
 
         Notification notif = builder
             .setContentTitle("VPN热点共享运行中")
-            .setContentText("代理: 172.25.1.1:7890  点击停止")
+            .setContentText("点击此通知停止共享  代理:172.25.1.1:7890")
+            .setContentIntent(stopPi)
             .setSmallIcon(android.R.drawable.ic_menu_share)
             .setOngoing(true)
             .setPriority(Notification.PRIORITY_MAX)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(new Notification.BigTextStyle()
-                .bigText("VPN热点共享运行中\n代理地址: 172.25.1.1:7890\n点击下方按钮停止共享"))
+                .bigText("VPN热点共享运行中\n代理地址: 172.25.1.1:7890\n\n点击此通知即可停止共享"))
             .addAction(android.R.drawable.ic_menu_close_clear_cancel,
                 "停止共享", stopPi)
             .build();
